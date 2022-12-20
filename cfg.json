@@ -1,0 +1,14 @@
+{
+    "seed": 21,
+    "categories": ["Backgroud", "General trash", "Paper", "Paper pack", "Metal", "Glass", "Plastic", "Styrofoam", "Plastic bag", "Battery", "Clothing"],
+    "data_dir": "../data",
+    "ann_file":{
+        "train": "train.json",
+        "val": "val.json",
+        "test": "test.json"
+    },
+    "learning_rate": 0.0001,
+    "batch_size": 8,
+    "epochs": 1,
+    "exp": 15
+}
