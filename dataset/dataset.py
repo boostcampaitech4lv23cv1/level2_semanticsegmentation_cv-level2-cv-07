@@ -7,13 +7,14 @@ import os
 
 class CustomDataset(Dataset):
     """COCO format"""
-    def __init__(self, data_dir, ann_path, categories, mode = 'train', transform = None):
+    def __init__(self, data_dir, ann_file, categories, mode = 'train', transform = None):
         super().__init__()
         self.data_dir = data_dir
-        self.ann_path = ann_path
         self.categories = categories
         self.mode = mode
         self.transform = transform
+        
+        ann_path = os.path.join(data_dir, ann_file)
         self.coco = COCO(ann_path)
         
     def __getitem__(self, index: int):
