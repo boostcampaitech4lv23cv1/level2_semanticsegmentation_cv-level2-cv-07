@@ -13,6 +13,7 @@ from dataset.transforms import Transform
 from model.models import *
 from utils.setting import set_seed
 from utils.collate import collate_fn
+from utils.utils import get_result
 
 def inference(model, test_loader, device):
     size = 256
@@ -83,14 +84,4 @@ if __name__ == "__main__":
     # test set에 대한 prediction
     file_names, preds = inference(model, test_loader, device)
 
-    # PredictionString 대입
-    for file_name, string in zip(file_names, preds):
-        submission = submission.append({"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}, 
-                                    ignore_index=True)
-
-
-    # sample_submisson.csv 열기
-    submission = pd.read_csv('./submission/sample_submission.csv', index_col=None)
-
-    # submission.csv로 저장
-    submission.to_csv("./submission/Unet_best_model.csv", index=False)
+    get_result("output.csv")
