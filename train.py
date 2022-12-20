@@ -9,12 +9,14 @@ import random
 import torch.backends.cudnn as cudnn
 
 from dataset.dataset import *
+from dataset.transforms import Transform
 from model.models import *
+from utils.utils import *
 from utils.setting import set_seed
 from utils.preprocess import exp_generator
 from utils.collate import collate_fn
 
-def validation(epoch, model, data_loader, criterion, device):
+def validation(epoch, model, data_loader, criterion, categories, device):
     print(f'Start validation #{epoch}')
     model.eval()
 
@@ -45,7 +47,7 @@ def validation(epoch, model, data_loader, criterion, device):
             hist = add_hist(hist, masks, outputs, n_class=n_class)
         
         acc, acc_cls, mIoU, fwavacc, IoU = label_accuracy_score(hist)
-        IoU_by_class = [{classes : round(IoU,4)} for IoU, classes in zip(IoU , sorted_df['Categories'])]
+        IoU_by_class = [{classes : round(IoU,4)} for IoU, classes in zip(IoU , categories)]
         
         avrg_loss = total_loss / cnt
         print(f'Validation #{epoch}  Average Loss: {round(avrg_loss.item(), 4)}, Accuracy : {round(acc, 4)}, \
@@ -54,7 +56,7 @@ def validation(epoch, model, data_loader, criterion, device):
         
     return avrg_loss
 
-def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp, device):
+def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp, categories, device):
     print(f'Start training..')
     n_class = 11
     best_loss = 9999999
@@ -74,8 +76,8 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp,
             model = model.to(device)
             
             # inference
-            outputs = model(images)
-            
+            outputs = model(images)['out']
+
             # loss 계산 (cross entropy loss)
             loss = criterion(outputs, masks)
             optimizer.zero_grad()
@@ -94,7 +96,7 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp,
                         Loss: {round(loss.item(),4)}, mIoU: {round(mIoU,4)}')
              
         # validation 주기에 따른 loss 출력 및 best model 저장
-        avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
+        avrg_loss = validation(epoch + 1, model, val_loader, criterion, categories, device)
 
         # 최근과 최고 epoch에 대한 last.pt와 best.pt 생성
         torch.save(model, f"exp/{exp}/last.pt")
@@ -122,15 +124,17 @@ if __name__ == "__main__":
     batch_size = cfg["batch_size"]
     learning_rate = cfg["learning_rate"]
     num_epochs = cfg["epochs"]
+    categories = cfg["categories"]
     seed = cfg["seed"]
     set_seed(seed)
 
     # import pprint
     # pprint.pprint(timm.models.list_models())
 
+    transform = Transform()
+
     ## Load train dataset
-    train_path = os.path.join(cfg["datadir"], cfg["ann_file"]["train"])
-    train_dataset = CustomDataset(data_dir=train_path, mode='train', transform=train_transform)
+    train_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='train', transform=transform.train)
     train_loader = DataLoader(dataset=train_dataset, 
                                             batch_size=batch_size,
                                             shuffle=True,
@@ -140,8 +144,7 @@ if __name__ == "__main__":
 
 
     ## Load validation dataset
-    val_path = os.path.join(cfg["datadir"], cfg["ann_file"]["val"])
-    val_dataset = CustomDataset(data_dir=val_path, mode='val', transform=val_transform)
+    val_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='val', transform=transform.val)
     val_loader = DataLoader(dataset=val_dataset, 
                                             batch_size=batch_size,
                                             shuffle=False,
@@ -152,10 +155,13 @@ if __name__ == "__main__":
     exp = exp_generator()
     scheduler = None
 
+    model = CustomModel()
+    model = model.to(device)
+
     # Loss function 정의
     criterion = nn.CrossEntropyLoss()
 
     # Optimizer 정의
     optimizer = torch.optim.Adam(params = model.parameters(), lr = learning_rate, weight_decay=1e-6)
 
-    train(num_epochs, model, train_loader, val_loader, criterion, optimizer, exp, device)
+    train(num_epochs, model, train_loader, val_loader, criterion, optimizer, exp, categories, device)
