@@ -1,13 +1,20 @@
 from torch.utils.data import Dataset, DataLoader
 from pycocotools.coco import COCO
 
+import numpy as np
+import cv2
+import os
+
 class CustomDataset(Dataset):
     """COCO format"""
-    def __init__(self, data_dir, mode = 'train', transform = None):
+    def __init__(self, data_dir, ann_path, categories, mode = 'train', transform = None):
         super().__init__()
+        self.data_dir = data_dir
+        self.ann_path = ann_path
+        self.categories = categories
         self.mode = mode
         self.transform = transform
-        self.coco = COCO(data_dir)
+        self.coco = COCO(ann_path)
         
     def __getitem__(self, index: int):
         # dataset이 index되어 list처럼 동작
@@ -15,7 +22,7 @@ class CustomDataset(Dataset):
         image_infos = self.coco.loadImgs(image_id)[0]
         
         # cv2 를 활용하여 image 불러오기
-        images = cv2.imread(os.path.join(dataset_path, image_infos['file_name']))
+        images = cv2.imread(os.path.join(self.data_dir, image_infos['file_name']))
         images = cv2.cvtColor(images, cv2.COLOR_BGR2RGB).astype(np.float32)
         images /= 255.0
         
@@ -35,7 +42,7 @@ class CustomDataset(Dataset):
             anns = sorted(anns, key=lambda idx : idx['area'], reverse=True)
             for i in range(len(anns)):
                 className = self.get_classname(anns[i]['category_id'], cats)
-                pixel_value = category_names.index(className)
+                pixel_value = self.categories.index(className)
                 masks[self.coco.annToMask(anns[i]) == 1] = pixel_value
             masks = masks.astype(np.int8)
                         
@@ -65,6 +72,10 @@ class CustomDataset(Dataset):
 
 
 if __name__ == "__main__":
-    train = CustomDataset(data_dir="../../data/train.json", mode='train', transform=None)
-    validation = CustomDataset(data_dir="../../data/train.json", mode='val', transform=None)
-    test = CustomDataset(data_dir="../../data/train.json", mode='test', transform=None)
+    import json
+    cfg = json.load(open("../cfg.json", "r"))
+    train = CustomDataset(data_dir="../../data", ann_path="train.json", categories = cfg["categories"], mode='train', transform=None)
+    val = CustomDataset(data_dir="../../data", ann_path="val.json", categories = cfg["categories"], mode='val', transform=None)
+    val = CustomDataset(data_dir="../../data", ann_path="test.json", categories = cfg["categories"], mode='test', transform=None)
+
+    print(type(train[0]))
