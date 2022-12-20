@@ -1,6 +1,7 @@
 # # https://github.com/wkentaro/pytorch-fcn/blob/master/torchfcn/utils.py
 
 import numpy as np
+import pandas as pd
 
 def _fast_hist(label_true, label_pred, n_class):
     mask = (label_true >= 0) & (label_true < n_class)
@@ -50,6 +51,23 @@ def _fast_hist(label_true, label_pred, n_class):
         n_class * label_true[mask].astype(int) +
         label_pred[mask], minlength=n_class ** 2).reshape(n_class, n_class)
     return hist
+
+
+def get_result(filename):
+    submission = pd.read_csv('./submission/sample_submission.csv', index_col=None)
+
+    # PredictionString 대입
+    for file_name, string in zip(file_names, preds):
+        submission = submission.append({"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}, 
+                                    ignore_index=True)
+
+
+    # sample_submisson.csv 열기
+    submission = pd.read_csv('./submission/sample_submission.csv', index_col=None)
+
+    # submission.csv로 저장
+    submission.to_csv(f"./submission/{filename}", index=False)
+
 
 
 # def label_accuracy_score(label_trues, label_preds, n_class):
