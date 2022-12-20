@@ -12,6 +12,7 @@ from dataset.dataset import *
 from model.models import *
 from utils.setting import set_seed
 from utils.preprocess import exp_generator
+from utils.collate import collate_fn
 
 def validation(epoch, model, data_loader, criterion, device):
     print(f'Start validation #{epoch}')
@@ -53,7 +54,7 @@ def validation(epoch, model, data_loader, criterion, device):
         
     return avrg_loss
 
-def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, saved_dir, val_every, device):
+def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp, device):
     print(f'Start training..')
     n_class = 11
     best_loss = 9999999
@@ -96,13 +97,13 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, save
         avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
 
         # 최근과 최고 epoch에 대한 last.pt와 best.pt 생성
-        torch.save(model, f"exp/{last}/{mtype}/last.pt")
+        torch.save(model, f"exp/{exp}/last.pt")
         if avrg_loss < best_loss:
             print(f"Best performance at epoch: {epoch + 1}")
-            print(f"Save model in {saved_dir}")
+            print(f"Save model in exp/{exp}")
             best_loss = avrg_loss
-            save_model(model, saved_dir)
-            torch.save(model, f"exp/{last}/{mtype}/best.pt")
+            torch.save(model, f"exp/{exp}/best.pt")
+            best_model=model
         
         if scheduler is not None:
             scheduler.step()
@@ -117,15 +118,20 @@ if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     cfg = json.load(open("cfg.json", "r"))
-    set_seed(21)
 
+    batch_size = cfg["batch_size"]
+    learning_rate = cfg["learning_rate"]
+    num_epochs = cfg["epochs"]
+    seed = cfg["seed"]
+    set_seed(seed)
 
     # import pprint
     # pprint.pprint(timm.models.list_models())
 
     ## Load train dataset
-    train_dataset = CustomDataLoader(data_dir=train_path, mode='train', transform=train_transform)
-    train_loader = torch.utils.data.DataLoader(dataset=train_dataset, 
+    train_path = os.path.join(cfg["datadir"], cfg["ann_file"]["train"])
+    train_dataset = CustomDataset(data_dir=train_path, mode='train', transform=train_transform)
+    train_loader = DataLoader(dataset=train_dataset, 
                                             batch_size=batch_size,
                                             shuffle=True,
                                             num_workers=4,
@@ -134,15 +140,16 @@ if __name__ == "__main__":
 
 
     ## Load validation dataset
-    val_dataset = CustomDataLoader(data_dir=val_path, mode='val', transform=val_transform)
-    val_loader = torch.utils.data.DataLoader(dataset=val_dataset, 
+    val_path = os.path.join(cfg["datadir"], cfg["ann_file"]["val"])
+    val_dataset = CustomDataset(data_dir=val_path, mode='val', transform=val_transform)
+    val_loader = DataLoader(dataset=val_dataset, 
                                             batch_size=batch_size,
                                             shuffle=False,
                                             num_workers=4,
                                             collate_fn=collate_fn)
 
 
-    last = exp_generator()
+    exp = exp_generator()
     scheduler = None
 
     # Loss function 정의
@@ -151,4 +158,4 @@ if __name__ == "__main__":
     # Optimizer 정의
     optimizer = torch.optim.Adam(params = model.parameters(), lr = learning_rate, weight_decay=1e-6)
 
-    train(num_epochs, model, train_loader, val_loader, criterion, optimizer, saved_dir, val_every, device)
+    train(num_epochs, model, train_loader, val_loader, criterion, optimizer, exp, device)

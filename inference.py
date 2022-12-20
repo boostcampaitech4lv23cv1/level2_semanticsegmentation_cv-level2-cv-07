@@ -1,16 +1,19 @@
 from torch.utils.data import DataLoader
 import torch
 from tqdm import tqdm
+import numpy as np
+import pandas as pd
+import os
 
 import json
 
 from dataset.dataset import *
 from model.models import *
 from utils.setting import set_seed
+from utils.collate import collate_fn
 
 def inference(model, test_loader, device):
     size = 256
-    transform = A.Compose([A.Resize(size, size)])
     print('Start prediction.')
     
     model.eval()
@@ -51,12 +54,16 @@ if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     cfg = json.load(open("cfg.json", "r"))
-    set_seed(21)
-    
-    
+    batch_size = cfg["batch_size"]
+    learning_rate = cfg["learning_rate"]
+    num_epochs = cfg["epochs"]
+    seed = cfg["seed"]
+    set_seed(seed)
+        
     # Load test dataset
-    test_dataset = CustomDataLoader(data_dir=test_path, mode='test', transform=test_transform)
-    test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
+    test_path = os.path.join(cfg["datadir"], cfg["ann_file"]["test"])
+    test_dataset = CustomDataset(data_dir=test_path, mode='test', transform=test_transform)
+    test_loader = DataLoader(dataset=test_dataset,
                                             batch_size=batch_size,
                                             num_workers=4,
                                             collate_fn=collate_fn)

@@ -3,9 +3,9 @@
     "categories": ["Backgroud", "General trash", "Paper", "Paper pack", "Metal", "Glass", "Plastic", "Styrofoam", "Plastic bag", "Battery", "Clothing"],
     "datadir": "../data",
     "ann_file":{
-        "ann_train": "train.json",
-        "ann_val": "val.json",
-        "ann_test": "test.json"
+        "train": "train.json",
+        "val": "val.json",
+        "test": "test.json"
     },
     "learning_rate": 0.0001,
     "batch_size": 8,
