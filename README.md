@@ -1,1 +1,1 @@
-Initialize `Segmentation` project
+## Boostcamp AI Tech - Level2: CV-7
