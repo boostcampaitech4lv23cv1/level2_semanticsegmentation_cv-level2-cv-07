@@ -1,3 +1,6 @@
 **/.ipynb**
 **/__pycache__/**
 *.pt
+mmsegmentation/pretrained
+mmsegmentation/work_dirs
+mmsegmentation/mmsegmentation.egg-info
