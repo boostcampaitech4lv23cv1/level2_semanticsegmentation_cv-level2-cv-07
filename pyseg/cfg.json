@@ -1,7 +1,7 @@
 {
     "seed": 21,
     "categories": ["Backgroud", "General trash", "Paper", "Paper pack", "Metal", "Glass", "Plastic", "Styrofoam", "Plastic bag", "Battery", "Clothing"],
-    "data_dir": "../data",
+    "data_dir": "/opt/ml/input/data",
     "ann_file":{
         "train": "train.json",
         "val": "val.json",
