@@ -36,7 +36,7 @@ def validation(epoch, model, data_loader, criterion, categories, device):
             # device 할당
             model = model.to(device)
             
-            outputs = model(images)['out']
+            outputs = model(images)
             loss = criterion(outputs, masks)
             total_loss += loss
             cnt += 1
@@ -76,7 +76,7 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp,
             model = model.to(device)
             
             # inference
-            outputs = model(images)['out']
+            outputs = model(images)
 
             # loss 계산 (cross entropy loss)
             loss = criterion(outputs, masks)
