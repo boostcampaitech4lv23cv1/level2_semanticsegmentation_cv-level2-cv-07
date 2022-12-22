@@ -1,3 +1,9 @@
-**/.ipynb**
+**/.ipynb_checkpoints/
 **/__pycache__/**
+pyseg/exp
 *.pt
+mmsegmentation/pretrained
+mmsegmentation/work_dirs
+mmsegmentation/mmsegmentation.egg-info
+mmsegmentation/wandb
+mmsegmentation/artifacts
