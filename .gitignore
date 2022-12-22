@@ -5,3 +5,5 @@ pyseg/exp
 mmsegmentation/pretrained
 mmsegmentation/work_dirs
 mmsegmentation/mmsegmentation.egg-info
+mmsegmentation/wandb
+mmsegmentation/artifacts
