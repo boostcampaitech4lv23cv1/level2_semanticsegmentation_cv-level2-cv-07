@@ -1,5 +1,6 @@
 **/.ipynb**
 **/__pycache__/**
+pyseg/exp
 *.pt
 mmsegmentation/pretrained
 mmsegmentation/work_dirs
