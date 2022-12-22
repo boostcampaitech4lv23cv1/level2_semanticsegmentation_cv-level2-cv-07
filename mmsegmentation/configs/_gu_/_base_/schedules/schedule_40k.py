@@ -9,6 +9,6 @@ lr_config = dict(
     warmup_ratio=1.0 / 10,
     min_lr_ratio=1e-5)
 # runtime settings
-runner = dict(type='IterBasedRunner', max_iters=160000)
-checkpoint_config = dict(by_epoch=False, interval=32000)
+runner = dict(type='IterBasedRunner', max_iters=40000)
+checkpoint_config = dict(by_epoch=False, interval=4000)
 evaluation = dict(interval=200, metric='mIoU', save_best="mIoU", pre_eval=True)

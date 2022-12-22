@@ -15,7 +15,7 @@ log_config = dict(
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = '/opt/ml/input/mmsegmentation/pretrained/upernet_convnext_base_fp16_512x512_160k_ade20k_20220227_181227-02a24fc6.pth'
+load_from = '/opt/ml/input/code/mmsegmentation/pretrained/fcn_hr48_512x512_40k_voc12aug_20200613_222111-1b0f18bc.pth'
 resume_from = None
-workflow = [('train', 1)]
+workflow = [('train', 1), ('val', 1)]
 cudnn_benchmark = True
