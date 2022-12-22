@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
 
     ## Load validation dataset
-    val_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='val', transform=transform.val)
+    val_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["val"], categories, mode='val', transform=transform.val)
     val_loader = DataLoader(dataset=val_dataset, 
                                             batch_size=batch_size,
                                             shuffle=False,
