@@ -8,4 +8,4 @@ runner = dict(type='IterBasedRunner', max_iters=6500)
 checkpoint_config = dict(by_epoch=False, interval=2000)
 evaluation = dict(interval=200, metric='mIoU', save_best="mIoU", pre_eval=True)
 
-print("test")
+print("test2")
