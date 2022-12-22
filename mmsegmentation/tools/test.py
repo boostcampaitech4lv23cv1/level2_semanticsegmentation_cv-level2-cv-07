@@ -28,8 +28,8 @@ import pandas as pd
 def parse_args():
     parser = argparse.ArgumentParser(
         description='mmseg test (and eval) a model')
-    parser.add_argument('--config', default='/opt/ml/input/mmsegmentation/work_dirs/deeplabv3_plus/deeplabv3_plus.py',help='test config file path')
-    parser.add_argument('--checkpoint',default='/opt/ml/input/mmsegmentation/work_dirs/deeplabv3_plus/iter_16000.pth', help='checkpoint file')
+    parser.add_argument('--config', default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_convnext_base_fp16_512x512_160k_ade20k/upernet_convnext_base_fp16_512x512_160k_ade20k.py',help='test config file path')
+    parser.add_argument('--checkpoint',default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_convnext_base_fp16_512x512_160k_ade20k/best_mIoU_iter_8000.pth', help='checkpoint file')
     parser.add_argument(
         '--work_dir',
         help=('if specified, the evaluation metric results will be dumped'
