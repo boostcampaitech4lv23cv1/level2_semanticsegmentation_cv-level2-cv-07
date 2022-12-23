@@ -76,14 +76,23 @@ if __name__ == "__main__":
     import json
     import pandas as pd
 
+    # collate_fn needs for batch
+    def collate_fn(batch):
+        return tuple(zip(*batch))
+
     cfg = json.load(open("../cfg.json", "r"))
     train = CustomDataset(data_dir=cfg["data_dir"], ann_file=cfg["ann_file"]["train"], categories = cfg["categories"], mode='train', transform=None)
+    train_loader = DataLoader(dataset=train, 
+                                        batch_size=8,
+                                        shuffle=True,
+                                        num_workers=4,
+                                        collate_fn=collate_fn,
+                                        drop_last=True)
     val = CustomDataset(data_dir=cfg["data_dir"], ann_file=cfg["ann_file"]["val"], categories = cfg["categories"], mode='val', transform=None)
     test = CustomDataset(data_dir=cfg["data_dir"], ann_file=cfg["ann_file"]["test"], categories = cfg["categories"], mode='test', transform=None)
 
-
-    for i in range(4):
-        image, mask, info = train[i]
+    batch = next(iter(train_loader))
+    for i, (image, mask, info) in enumerate(zip(*batch)):
         image*=255
         
         image = image.astype(np.uint8)
