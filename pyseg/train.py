@@ -152,7 +152,6 @@ if __name__ == "__main__":
                                             collate_fn=collate_fn)
 
 
-    exp = exp_generator()
     scheduler = None
 
     model = CustomModel()
@@ -164,4 +163,6 @@ if __name__ == "__main__":
     # Optimizer 정의
     optimizer = torch.optim.Adam(params = model.parameters(), lr = learning_rate, weight_decay=1e-6)
 
+    exp = exp_generator()
+    
     train(num_epochs, model, train_loader, val_loader, criterion, optimizer, exp, categories, device)
