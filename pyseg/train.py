@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
 
     ## Load validation dataset
-    val_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='val', transform=transform.val)
+    val_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["val"], categories, mode='val', transform=transform.val)
     val_loader = DataLoader(dataset=val_dataset, 
                                             batch_size=batch_size,
                                             shuffle=False,
@@ -152,7 +152,6 @@ if __name__ == "__main__":
                                             collate_fn=collate_fn)
 
 
-    exp = exp_generator()
     scheduler = None
 
     model = CustomModel()
@@ -164,4 +163,6 @@ if __name__ == "__main__":
     # Optimizer 정의
     optimizer = torch.optim.Adam(params = model.parameters(), lr = learning_rate, weight_decay=1e-6)
 
+    exp = exp_generator()
+    
     train(num_epochs, model, train_loader, val_loader, criterion, optimizer, exp, categories, device)

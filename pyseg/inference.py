@@ -29,7 +29,7 @@ def inference(model, test_loader, device):
         for step, (imgs, image_infos) in enumerate(tqdm(test_loader)):
             
             # inference (512 x 512)
-            outs = model(torch.stack(imgs).to(device))['out']
+            outs = model(torch.stack(imgs).to(device))
             oms = torch.argmax(outs, dim=1).detach().cpu().numpy()
             
             # resize (256 x 256)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Load test dataset
     test_path = os.path.join(cfg["data_dir"], cfg["ann_file"]["test"])
-    test_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='test', transform=transform.test)
+    test_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["test"], categories, mode='test', transform=transform.test)
     test_loader = DataLoader(dataset=test_dataset,
                                             batch_size=batch_size,
                                             num_workers=4,

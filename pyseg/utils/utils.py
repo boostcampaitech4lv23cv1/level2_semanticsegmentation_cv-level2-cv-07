@@ -53,7 +53,7 @@ def _fast_hist(label_true, label_pred, n_class):
     return hist
 
 
-def get_result(filename):
+def get_result(output, file_names, preds):
     submission = pd.read_csv('./submission/sample_submission.csv', index_col=None)
 
     # PredictionString 대입
@@ -61,12 +61,8 @@ def get_result(filename):
         submission = submission.append({"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}, 
                                     ignore_index=True)
 
-
-    # sample_submisson.csv 열기
-    submission = pd.read_csv('./submission/sample_submission.csv', index_col=None)
-
     # submission.csv로 저장
-    submission.to_csv(f"./submission/{filename}", index=False)
+    submission.to_csv(f"./submission/{output}", index=False)
 
 
 
