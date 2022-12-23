@@ -74,9 +74,48 @@ class CustomDataset(Dataset):
 
 if __name__ == "__main__":
     import json
-    cfg = json.load(open("../cfg.json", "r"))
-    train = CustomDataset(data_dir="../../data", ann_path="train.json", categories = cfg["categories"], mode='train', transform=None)
-    val = CustomDataset(data_dir="../../data", ann_path="val.json", categories = cfg["categories"], mode='val', transform=None)
-    val = CustomDataset(data_dir="../../data", ann_path="test.json", categories = cfg["categories"], mode='test', transform=None)
+    import pandas as pd
 
-    print(type(train[0]))
+    cfg = json.load(open("../cfg.json", "r"))
+    train = CustomDataset(data_dir=cfg["data_dir"], ann_file=cfg["ann_file"]["train"], categories = cfg["categories"], mode='train', transform=None)
+    val = CustomDataset(data_dir=cfg["data_dir"], ann_file=cfg["ann_file"]["val"], categories = cfg["categories"], mode='val', transform=None)
+    test = CustomDataset(data_dir=cfg["data_dir"], ann_file=cfg["ann_file"]["test"], categories = cfg["categories"], mode='test', transform=None)
+
+
+    for i in range(4):
+        image, mask, info = train[i]
+        image*=255
+        
+        image = image.astype(np.uint8)
+
+        mask = np.expand_dims(mask, axis=2)
+        mask = mask.astype(np.uint8)
+
+        color_map = np.array([
+            [0, 0, 0],
+            [255, 0, 0],
+            [0, 255, 0],
+            [0, 0, 255],
+            [255, 255, 0],
+            [0, 255, 255],
+            [255, 0, 255],
+            [192, 128, 64],
+            [192, 192, 128],
+            [64, 64, 128],
+            [128, 0, 192],
+        ])
+
+        ## segment의 bit 이미지 제작
+        bit_mask = mask.copy()
+        bit_mask[bit_mask>0] = 255
+        bit_mask = cv2.cvtColor(bit_mask, cv2.COLOR_GRAY2RGB)
+
+        ## 마스크, 세그먼트 원본, 배경 원본 작성
+        mask = np.array(list(map(lambda x: color_map[x], mask)), dtype=np.uint8).squeeze()
+        segment = cv2.bitwise_and(image, bit_mask)
+        bg = cv2.subtract(image, bit_mask)
+
+        masked_segment = cv2.addWeighted(segment, 0.5, mask, 0.5, 0)
+        viz = cv2.bitwise_or(masked_segment, bg)
+        
+        cv2.imwrite(f"src{i}.jpg", viz)
