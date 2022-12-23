@@ -2,13 +2,12 @@ import os
 
 def exp_generator():
     if not os.path.exists("exp"):
-        os.makedirs("exp")
+        os.makedirs("exp/")
 
     exp = os.listdir("exp")
     exp = [x for x in exp if not x.startswith(".")]
     
     if not exp:
-        os.mkdir("exp/0")
         last = 0
     else:
         last = list(map(int, exp))
@@ -16,7 +15,8 @@ def exp_generator():
         last = last[-1]
         last+= 1
         
-        os.mkdir(f"exp/{last}")
+    os.makedirs(f"exp/{last}/tensorboard")
+    os.makedirs(f"exp/{last}/wandb")
         
     return last
 
