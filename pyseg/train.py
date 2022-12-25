@@ -16,6 +16,18 @@ from utils.setting import set_seed
 from utils.preprocess import exp_generator
 from utils.collate import collate_fn
 
+import wandb
+import argparse
+
+# def parse_args():
+#     parser = parser.ArgumentParser(
+#         description='pyseg trainer with wandb')
+#     parser.add_argument('--project-name', default='mmseg', type=str, help='project name')
+
+#     args = parser.parse_args()
+
+#     return args
+
 def validation(epoch, model, data_loader, criterion, categories, exp, device):
     print(f'Start validation #{epoch}')
     model.eval()
@@ -50,13 +62,18 @@ def validation(epoch, model, data_loader, criterion, categories, exp, device):
         IoU_by_class = [{classes : round(IoU,4)} for IoU, classes in zip(IoU , categories)]
 
         # 실험 폴더에 validation 시각화 이미지 저장
-        val_viz(data_loader, exp, )
-        
+        val_imgs = val_viz(data_loader, exp)
+
+        wandb.log({"Validatioin": {"Images": val_imgs}})
+
         avrg_loss = total_loss / cnt
         print(f'Validation #{epoch}  Average Loss: {round(avrg_loss.item(), 4)}, Accuracy : {round(acc, 4)}, \
                 mIoU: {round(mIoU, 4)}')
         print(f'IoU by class : {IoU_by_class}')
-
+        
+        for IoU, classes in zip(IoU, categories):
+            wandb.log({"Validation": {classes : round(IoU,4)}})
+        wandb.log({"Validation": {"Average Loss": avrg_loss, "Accuracy": acc, "mIoU": mIoU}})
         
     return avrg_loss
 
@@ -98,6 +115,7 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp,
             if (step + 1) % 25 == 0:
                 print(f'Epoch [{epoch+1}/{num_epochs}], Step [{step+1}/{len(train_loader)}], \
                         Loss: {round(loss.item(),4)}, mIoU: {round(mIoU,4)}')
+            wandb.log({"Train": {"Loss": loss.item(), "mIoU": mIoU}})
              
         # validation 주기에 따른 loss 출력 및 best model 저장
         avrg_loss = validation(epoch + 1, model, val_loader, criterion, categories, exp, device)
@@ -165,5 +183,16 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(params = model.parameters(), lr = learning_rate, weight_decay=1e-6)
 
     exp = exp_generator()
+
+    wandb_dir = f"exp/{exp}"
+
+    wandb.init(
+        project='pyseg',
+        entity='thlee00',
+        name='Unet_mobilenetv3_large_100',
+        dir=wandb_dir,
+    )
+    # args = parse_args()
+    # wandb.config.update(args)
     
     train(num_epochs, model, train_loader, val_loader, criterion, optimizer, exp, categories, device)
