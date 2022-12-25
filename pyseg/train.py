@@ -155,7 +155,7 @@ if __name__ == "__main__":
     transform = Transform()
 
     ## Load train dataset
-    train_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["val"], categories, mode='train', transform=transform.train)
+    train_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='train', transform=transform.train)
     train_loader = DataLoader(dataset=train_dataset, 
                                             batch_size=batch_size,
                                             shuffle=True,
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     wandb.init(
         project='pyseg',
-        entity='thlee00',
+        entity='juye-ops',
         name='Unet_mobilenetv3_large_100',
         dir=wandb_dir,
     )

@@ -53,11 +53,11 @@ def _fast_hist(label_true, label_pred, n_class):
     return hist
 
 
-def val_viz(image, mask, exp):
+def val_viz(images, masks, exp):
     val_imgs = []
     # Preprocess
     # - Tensor Transform -> Numpy
-    for i, (image, mask) in enumerate(zip(image, mask)):
+    for i, (image, mask) in enumerate(zip(images, masks)):
         image = image.permute(1, 2, 0)
         image = image.cpu().numpy()
         mask = mask
@@ -88,8 +88,6 @@ def val_viz(image, mask, exp):
         bit_mask[bit_mask>0] = 255
         bit_mask = cv2.cvtColor(bit_mask, cv2.COLOR_GRAY2RGB)
 
-        print(image.shape, mask.shape)
-        print(bit_mask.shape)
 
         # - 마스크, 세그먼트 원본, 배경 원본 작성
         mask = np.array(list(map(lambda x: color_map[x], mask)), dtype=np.uint8).squeeze()
