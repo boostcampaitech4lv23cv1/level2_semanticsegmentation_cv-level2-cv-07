@@ -22,6 +22,12 @@ train_pipeline = [
         dict(type='Pad', size_divisor=32),
         dict(type='DefaultFormatBundle'),
         dict(type='Collect', keys=['img', 'gt_semantic_seg']),
+        # dict(
+        #     type='Compose',
+        #     transforms=[
+                
+        #     ]),
+        dict(type='RandomMosaic', prob=0.5, img_scale=(640,640)),
     ]
 
 val_pipeline = [

@@ -4,7 +4,7 @@ optimizer_config = dict()
 # learning policy
 lr_config = dict(policy='poly', power=0.9, min_lr=1e-4, by_epoch=False)
 # runtime settings
-runner = dict(type='IterBasedRunner', max_iters=26200)
-checkpoint_config = dict(by_epoch=False, interval=50000)
-evaluation = dict(interval=1309, metric='mIoU', save_best='mIoU',pre_eval=True)
+runner = dict(type='IterBasedRunner', max_iters=6550)
+checkpoint_config = dict(by_epoch=False, interval=1635)
+evaluation = dict(interval=327, metric='mIoU', save_best='mIoU',pre_eval=True)
 
