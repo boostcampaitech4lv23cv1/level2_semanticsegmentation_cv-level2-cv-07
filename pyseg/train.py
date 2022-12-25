@@ -57,12 +57,14 @@ def validation(epoch, model, data_loader, criterion, categories, exp, device):
             masks = masks.detach().cpu().numpy()
             
             hist = add_hist(hist, masks, outputs, n_class=n_class)
+            if step == 1:
+                val_viz(images, outputs, exp)
         
         acc, acc_cls, mIoU, fwavacc, IoU = label_accuracy_score(hist)
         IoU_by_class = [{classes : round(IoU,4)} for IoU, classes in zip(IoU , categories)]
 
         # 실험 폴더에 validation 시각화 이미지 저장
-        val_imgs = val_viz(data_loader, exp)
+        val_imgs = val_viz(images, masks, exp)
 
         wandb.log({"Validatioin": {"Images": val_imgs}})
 
@@ -153,7 +155,7 @@ if __name__ == "__main__":
     transform = Transform()
 
     ## Load train dataset
-    train_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["train"], categories, mode='train', transform=transform.train)
+    train_dataset = CustomDataset(cfg["data_dir"], cfg["ann_file"]["val"], categories, mode='train', transform=transform.train)
     train_loader = DataLoader(dataset=train_dataset, 
                                             batch_size=batch_size,
                                             shuffle=True,

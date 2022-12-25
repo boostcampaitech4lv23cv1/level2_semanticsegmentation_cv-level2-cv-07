@@ -53,15 +53,14 @@ def _fast_hist(label_true, label_pred, n_class):
     return hist
 
 
-def val_viz(data_loader, exp):
-    batch = next(iter(data_loader))
+def val_viz(image, mask, exp):
     val_imgs = []
-    for i, (image, mask, info) in enumerate(zip(*batch)):
-        # Preprocess
-        # - Tensor Transform -> Numpy
-        image = image
-        image = image.permute(1, 2, 0).numpy()
-        mask = mask.numpy()
+    # Preprocess
+    # - Tensor Transform -> Numpy
+    for i, (image, mask) in enumerate(zip(image, mask)):
+        image = image.permute(1, 2, 0)
+        image = image.cpu().numpy()
+        mask = mask
         image*=255
         
         image = image.astype(np.uint8)
