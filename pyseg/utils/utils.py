@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import cv2
+import wandb
 
 def _fast_hist(label_true, label_pred, n_class):
     mask = (label_true >= 0) & (label_true < n_class)
@@ -44,8 +45,6 @@ def add_hist(hist, label_trues, label_preds, n_class):
     return hist
 
 
-
-
 def _fast_hist(label_true, label_pred, n_class):
     mask = (label_true >= 0) & (label_true < n_class)
     hist = np.bincount(
@@ -54,14 +53,14 @@ def _fast_hist(label_true, label_pred, n_class):
     return hist
 
 
-def val_viz(data_loader, exp):
-    batch = next(iter(data_loader))
-    for i, (image, mask, info) in enumerate(zip(*batch)):
-        # Preprocess
-        # - Tensor Transform -> Numpy
-        image = image
-        image = image.permute(1, 2, 0).numpy()
-        mask = mask.numpy()
+def val_viz(image, mask, exp):
+    val_imgs = []
+    # Preprocess
+    # - Tensor Transform -> Numpy
+    for i, (image, mask) in enumerate(zip(image, mask)):
+        image = image.permute(1, 2, 0)
+        image = image.cpu().numpy()
+        mask = mask
         image*=255
         
         image = image.astype(np.uint8)
@@ -102,6 +101,9 @@ def val_viz(data_loader, exp):
         
         cv2.imwrite(f"exp/{exp}/tensorboard/viz{i}.jpg", viz)
 
+        val_imgs.append(wandb.Image(viz, caption=f"viz_{i}"))
+
+    return val_imgs
 
 
 def get_result(output, file_names, preds):
