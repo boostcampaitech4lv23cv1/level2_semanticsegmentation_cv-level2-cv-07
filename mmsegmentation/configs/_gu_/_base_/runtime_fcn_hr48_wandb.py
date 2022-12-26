@@ -25,4 +25,3 @@ load_from = '/opt/ml/input/code/mmsegmentation/pretrained/fcn_hr48_512x512_40k_v
 resume_from = None
 workflow = [('train', 1), ('val', 1)]
 cudnn_benchmark = True
-cudnn_benchmark = True
