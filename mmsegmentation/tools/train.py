@@ -231,7 +231,6 @@ def main():
     model.CLASSES = datasets[0].CLASSES
     # passing checkpoint meta for saving best checkpoint
     meta.update(cfg.checkpoint_config.meta)
-    
     train_segmentor(
         model,
         datasets,
