@@ -9,17 +9,12 @@ palette =  [[0,0,0], [192,0,128], [0,128,192], [0,128,64], [128,0,0], [64,0,128]
            [64,0,192] ,[192,128,64], [192,192,128], [64,64,128], [128,0,192]]
 
 img_norm_cfg = dict(
-    mean = [109.9291, 117.2673, 123.4647] , std = [54.8851, 53.497 , 54.0975], to_rgb=True)
-
-# train_all mean, std
-# img_norm_cfg = dict(
-#     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True
-# )
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 
 train_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(type='LoadAnnotations'),
-        dict(type='Resize', img_scale=(512,512), keep_ratio=True),
+        dict(type='Resize', img_scale=(640,640), keep_ratio=True),
         dict(type='RandomFlip', flip_ratio=0.5),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='Pad', size_divisor=32),
@@ -31,7 +26,7 @@ val_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(
             type='MultiScaleFlipAug',
-            img_scale=(512, 512),
+            img_scale=(640, 640),
             flip=False,
             transforms=[
                 dict(type='Resize', keep_ratio=True),
@@ -47,7 +42,7 @@ test_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(
             type='MultiScaleFlipAug',
-            img_scale=[(512,512)],#[(1024, 1024),(512,512),(1333,800)],
+            img_scale=[(640,640)],#[(1024, 1024),(512,512),(1333,800)],
             flip= False,
             flip_direction =  ["horizontal", "vertical" ],
             transforms=[

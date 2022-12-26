@@ -8,10 +8,13 @@ classes = ("Backgroud","General trash", "Paper", "Paper pack", "Metal", "Glass",
 palette =  [[0,0,0], [192,0,128], [0,128,192], [0,128,64], [128,0,0], [64,0,128],
            [64,0,192] ,[192,128,64], [192,192,128], [64,64,128], [128,0,192]]
 
+# ImageNet mean, std
 img_norm_cfg = dict(
-    mean = [109.9291, 117.2673, 123.4647] , std = [54.8851, 53.497 , 54.0975], to_rgb=True)
-# train_all mean, std
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 
+# train_all mean, std
+# img_norm_cfg = dict(
+#     mean = [109.9291, 117.2673, 123.4647] , std = [54.8851, 53.497 , 54.0975], to_rgb=True)
 
 train_pipeline = [
         dict(type='LoadImageFromFile'),
