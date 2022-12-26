@@ -1,10 +1,10 @@
 # Boostcamp AI Tech - Level2: CV-7 실험 기록
 
 ## 12. 26
-
+- AI stage 제출 description -> notion 실험 페이지 링크
 
 ## 12. 27
-
+- 데일리스크럼 때 모델 선정 완료
 - 주엽 미리 새로고침 중
 
 ## 12. 28 (F5 dAy~!~!~!~!)
