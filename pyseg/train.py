@@ -16,7 +16,7 @@ from utils.setting import set_seed
 from utils.preprocess import exp_generator
 from utils.collate import collate_fn
 
-def validation(epoch, model, data_loader, criterion, categories, device):
+def validation(epoch, model, data_loader, criterion, categories, exp, device):
     print(f'Start validation #{epoch}')
     model.eval()
 
@@ -48,11 +48,15 @@ def validation(epoch, model, data_loader, criterion, categories, device):
         
         acc, acc_cls, mIoU, fwavacc, IoU = label_accuracy_score(hist)
         IoU_by_class = [{classes : round(IoU,4)} for IoU, classes in zip(IoU , categories)]
+
+        # 실험 폴더에 validation 시각화 이미지 저장
+        val_viz(data_loader, exp, )
         
         avrg_loss = total_loss / cnt
         print(f'Validation #{epoch}  Average Loss: {round(avrg_loss.item(), 4)}, Accuracy : {round(acc, 4)}, \
                 mIoU: {round(mIoU, 4)}')
         print(f'IoU by class : {IoU_by_class}')
+
         
     return avrg_loss
 
@@ -96,7 +100,7 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, exp,
                         Loss: {round(loss.item(),4)}, mIoU: {round(mIoU,4)}')
              
         # validation 주기에 따른 loss 출력 및 best model 저장
-        avrg_loss = validation(epoch + 1, model, val_loader, criterion, categories, device)
+        avrg_loss = validation(epoch + 1, model, val_loader, criterion, categories, exp, device)
 
         # 최근과 최고 epoch에 대한 last.pt와 best.pt 생성
         torch.save(model, f"exp/{exp}/last.pt")
@@ -127,10 +131,7 @@ if __name__ == "__main__":
     categories = cfg["categories"]
     seed = cfg["seed"]
     set_seed(seed)
-
-    # import pprint
-    # pprint.pprint(timm.models.list_models())
-
+    
     transform = Transform()
 
     ## Load train dataset

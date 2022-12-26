@@ -1,17 +1,21 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
+
+import matplotlib.pyplot as plt
+import mmcv
+import numpy as np
+from matplotlib.ticker import MultipleLocator
+from mmcv import Config, DictAction
+
 import os.path as osp
-import shutil
 import time
 import warnings
 
-import mmcv
 import torch
 from mmcv.cnn.utils import revert_sync_batchnorm
 from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
                          wrap_fp16_model)
-from mmcv.utils import DictAction
 
 from mmseg import digit_version
 from mmseg.apis import multi_gpu_test, single_gpu_test
@@ -19,17 +23,24 @@ from mmseg.datasets import build_dataloader, build_dataset
 from mmseg.models import build_segmentor
 from mmseg.utils import build_ddp, build_dp, get_device, setup_multi_processes
 
-# submission
-from pycocotools.coco import COCO
-import numpy as np
-import cv2
-import pandas as pd
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='mmseg test (and eval) a model')
-    parser.add_argument('--config', default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet.py',help='test config file path')
-    parser.add_argument('--checkpoint',default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet/best_mIoU_iter_24871.pth', help='checkpoint file')
+        description='mmseg test (and eval) a model & Generate confusion matrix from segmentation results')
+    parser.add_argument('config', help='test config file path')
+    parser.add_argument('checkpoint', help='checkpoint file')
+    parser.add_argument(
+        'save_dir', help='directory where confusion matrix will be saved')
+    parser.add_argument(
+        '--color-theme',
+        default='PiYG',
+        help='theme of the matrix color map')
+    parser.add_argument(
+        '--title',
+        default='Normalized Confusion Matrix',
+        help='title of the matrix color map')
+
+
     parser.add_argument(
         '--work_dir',
         help=('if specified, the evaluation metric results will be dumped'
@@ -49,9 +60,6 @@ def parse_args():
         nargs='+',
         help='evaluation metrics, which depends on the dataset, e.g., "mIoU"'
         ' for generic datasets, and "cityscapes" for Cityscapes')
-    parser.add_argument('--show', action='store_true', help='show results')
-    parser.add_argument(
-        '--show-dir', help='directory where painted images will be saved')
     parser.add_argument(
         '--gpu-collect',
         action='store_true',
@@ -120,21 +128,118 @@ def parse_args():
     return args
 
 
+def calculate_confusion_matrix(dataset, results):
+    """Calculate the confusion matrix.
+
+    Args:
+        dataset (Dataset): Test or val dataset.
+        results (list[ndarray]): A list of segmentation results in each image.
+    """
+    n = len(dataset.CLASSES)
+    confusion_matrix = np.zeros(shape=[n, n])
+    assert len(dataset) == len(results)
+    ignore_index = dataset.ignore_index
+    prog_bar = mmcv.ProgressBar(len(results))
+    for idx, per_img_res in enumerate(results):
+        res_segm = per_img_res
+        gt_segm = dataset.get_gt_seg_map_by_idx(idx).astype(int)
+        gt_segm, res_segm = gt_segm.flatten(), res_segm.flatten()
+        to_ignore = gt_segm == ignore_index
+        gt_segm, res_segm = gt_segm[~to_ignore], res_segm[~to_ignore]
+        inds = n * gt_segm + res_segm
+        mat = np.bincount(inds, minlength=n**2).reshape(n, n)
+        confusion_matrix += mat
+        prog_bar.update()
+    return confusion_matrix
+
+
+def plot_confusion_matrix(confusion_matrix,
+                          labels,
+                          save_dir=None,
+                          show=True,
+                          title='Normalized Confusion Matrix',
+                          color_theme='winter'):
+    """Draw confusion matrix with matplotlib.
+
+    Args:
+        confusion_matrix (ndarray): The confusion matrix.
+        labels (list[str]): List of class names.
+        save_dir (str|optional): If set, save the confusion matrix plot to the
+            given path. Default: None.
+        show (bool): Whether to show the plot. Default: True.
+        title (str): Title of the plot. Default: `Normalized Confusion Matrix`.
+        color_theme (str): Theme of the matrix color map. Default: `winter`.
+    """
+    # normalize the confusion matrix
+    per_label_sums = confusion_matrix.sum(axis=1)[:, np.newaxis]
+    confusion_matrix = \
+        confusion_matrix.astype(np.float32) / per_label_sums * 100
+
+    num_classes = len(labels)
+    fig, ax = plt.subplots(
+        figsize=(2 * num_classes, 2 * num_classes * 0.8), dpi=180)
+    cmap = plt.get_cmap(color_theme)
+    im = ax.imshow(confusion_matrix, cmap=cmap)
+    plt.colorbar(mappable=im, ax=ax)
+
+    title_font = {'weight': 'bold', 'size': 50}
+    ax.set_title(title, fontdict=title_font)
+    label_font = {'size': 40}
+    plt.ylabel('Ground Truth Label', fontdict=label_font)
+    plt.xlabel('Prediction Label', fontdict=label_font)
+
+    # draw locator
+    xmajor_locator = MultipleLocator(1)
+    xminor_locator = MultipleLocator(0.5)
+    ax.xaxis.set_major_locator(xmajor_locator)
+    ax.xaxis.set_minor_locator(xminor_locator)
+    ymajor_locator = MultipleLocator(1)
+    yminor_locator = MultipleLocator(0.5)
+    ax.yaxis.set_major_locator(ymajor_locator)
+    ax.yaxis.set_minor_locator(yminor_locator)
+
+    # draw grid
+    ax.grid(True, which='minor', linestyle='-')
+
+    # draw label
+    ax.set_xticks(np.arange(num_classes))
+    ax.set_yticks(np.arange(num_classes))
+    ax.set_xticklabels(labels, fontsize=30)
+    ax.set_yticklabels(labels, fontsize=30)
+
+    ax.tick_params(
+        axis='x', bottom=False, top=True, labelbottom=False, labeltop=True)
+    plt.setp(
+        ax.get_xticklabels(), rotation=45, ha='left', rotation_mode='anchor')
+
+    # draw confusion matrix value
+    for i in range(num_classes):
+        for j in range(num_classes):
+            ax.text(
+                j,
+                i,
+                '{}'.format(
+                    round(confusion_matrix[i, j], 2
+                          ) if not np.isnan(confusion_matrix[i, j]) else -1),
+                ha='center',
+                va='center',
+                color='black',
+                size=26)
+
+    ax.set_ylim(len(confusion_matrix) - 0.5, -0.5)  # matplotlib>3.1.1
+
+    fig.tight_layout()
+    if save_dir is not None:
+        plt.savefig(
+            os.path.join(save_dir, 'confusion_matrix.png'), format='png')
+    if show:
+        plt.show()
+
+
 def main():
     args = parse_args()
-    # assert args.out or args.eval or args.format_only or args.show \
-    #     or args.show_dir, \
-    #     ('Please specify at least one operation (save/eval/format/show the '
-    #      'results / save the results) with the argument "--out", "--eval"'
-    #      ', "--format-only", "--show" or "--show-dir"')
 
-    # if args.eval and args.format_only:
-    #     raise ValueError('--eval and --format_only cannot be both specified')
-
-    # if args.out is not None and not args.out.endswith(('.pkl', '.pickle')):
-    #     raise ValueError('The output file must be a pkl file.')
-   
-    cfg = mmcv.Config.fromfile(args.config)
+    cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
 
@@ -194,7 +299,7 @@ def main():
 
     # build the dataloader
     # TODO: support multiple images per gpu (only minor changes are needed)
-    dataset = build_dataset(cfg.data.test)
+    dataset = build_dataset(cfg.data.val)
     # The default loader config
     loader_cfg = dict(
         # cfg.gpus will be ignored if distributed
@@ -280,8 +385,8 @@ def main():
         results = single_gpu_test(
             model,
             data_loader,
-            args.show,
-            args.show_dir,
+            False,
+            None,
             False,
             args.opacity,
             pre_eval=args.eval is not None and not eval_on_format_results,
@@ -303,45 +408,27 @@ def main():
             format_only=args.format_only or eval_on_format_results,
             format_args=eval_kwargs)
 
-    rank, _ = get_dist_info()
-    if rank == 0:
-        if args.out:
-            warnings.warn(
-                'The behavior of ``args.out`` has been changed since MMSeg '
-                'v0.16, the pickled outputs could be seg map as type of '
-                'np.array, pre-eval results or file paths for '
-                '``dataset.format_results()``.')
-            print(f'\nwriting results to {args.out}')
-            mmcv.dump(results, args.out)
-        if args.eval:
-            eval_kwargs.update(metric=args.eval)
-            metric = dataset.evaluate(results, **eval_kwargs)
-            metric_dict = dict(config=args.config, metric=metric)
-            mmcv.dump(metric_dict, json_file, indent=4)
-            if tmpdir is not None and eval_on_format_results:
-                # remove tmp dir when cityscapes evaluation
-                shutil.rmtree(tmpdir)
+    assert isinstance(results, list)
+    if isinstance(results[0], np.ndarray):
+        pass
+    else:
+        raise TypeError('invalid type of prediction results')
 
-    
-    # Submission code
-    
-    test = COCO('/opt/ml/input/data/test.json')
-    predictions = []
-    file_names = []
-    results = np.array(results)
-    for idx, out in enumerate(results):
-        image_info = test.loadImgs(test.getImgIds(imgIds=idx))[0]
-        
-        out = cv2.resize(out.astype(float),(256,256),interpolation=cv2.INTER_LINEAR)
-        out = out.reshape([256*256]).astype(int)
-        prediction_string = ' '.join(str(e) for e in out.tolist())
-        predictions.append(prediction_string)
-        file_names.append(image_info['file_name'])
-    
-    submission = pd.DataFrame()
-    submission['image_id'] = file_names
-    submission['PredictionString'] = predictions
-    submission_path = args.checkpoint.replace(".pth",".csv")
-    submission.to_csv(submission_path,index=False)
+    if isinstance(cfg.data.test, dict):
+        cfg.data.test.test_mode = True
+    elif isinstance(cfg.data.test, list):
+        for ds_cfg in cfg.data.test:
+            ds_cfg.test_mode = True
+
+    confusion_matrix = calculate_confusion_matrix(dataset, results)
+    plot_confusion_matrix(
+        confusion_matrix,
+        dataset.CLASSES,
+        save_dir=args.save_dir,
+        show=True,
+        title=args.title,
+        color_theme=args.color_theme)
+
+
 if __name__ == '__main__':
     main()

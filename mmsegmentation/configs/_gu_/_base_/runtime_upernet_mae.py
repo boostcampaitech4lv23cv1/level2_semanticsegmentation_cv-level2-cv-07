@@ -12,10 +12,11 @@ log_config = dict(
         #      ))
         # dict(type='PaviLoggerHook') # for internal services
     ])
+
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/pretrained/pspnet_r50-d8_512x512_80k_ade20k_20200615_014128-15a8b914.pth'
+load_from = '/opt/ml/input/code/mmsegmentation/pretrained/upernet_mae-base_fp16_8x2_512x512_160k_ade20k_20220426_174752-f92a2975.pth'
 resume_from = None
-workflow = [('train', 1)]
+workflow = [('train', 1), ('val', 1)]
 cudnn_benchmark = True

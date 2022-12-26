@@ -84,4 +84,4 @@ if __name__ == "__main__":
     # test set에 대한 prediction
     file_names, preds = inference(model, test_loader, device)
 
-    get_result("output.csv")
+    get_result("output.csv", file_names, preds)

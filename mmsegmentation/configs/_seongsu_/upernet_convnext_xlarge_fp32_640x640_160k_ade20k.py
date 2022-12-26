@@ -1,6 +1,6 @@
 _base_ = [
     './_base_/models/upernet_convnext.py',
-    './_base_/datasets/coco_segmentation_640.py', './_base_/default_runtime.py',
+    './_base_/datasets/coco_segmentation_640_ImgNet.py', './_base_/default_runtime.py',
     './_base_/schedules/schedule_custom.py'
 ]
 crop_size = (640, 640)
