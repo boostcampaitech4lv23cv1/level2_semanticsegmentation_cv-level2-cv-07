@@ -77,11 +77,12 @@ train_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(type='LoadAnnotations'),
         dict(type='Resize', img_scale=(640,640), keep_ratio=True),
+        #dict(type='PhotoMetricDistortion'),
+        dict(type='CLAHE', clip_limit=40.0, tile_grid_size=(8, 8)),
         dict(type='RandomFlip', flip_ratio=0.5),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='Pad', size_divisor=32),
         #dict(type='RandomMosaic', prob=0.5, img_scale=(640,640)),
-        #dict(type='PhotoMetricDistortion', brightness_delta=32, contrast_range=(0.5, 1.5), saturation_range=(0.5, 1.5), hue_delta=18),
         dict(type='DefaultFormatBundle'),
         dict(type='Collect', keys=['img', 'gt_semantic_seg']),
     ]
@@ -119,7 +120,7 @@ test_pipeline = [
             ])
     ]
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=16,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
