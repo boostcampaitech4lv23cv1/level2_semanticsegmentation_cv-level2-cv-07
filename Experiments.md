@@ -5,6 +5,10 @@
 
 ## 12. 27
 - 데일리스크럼 때 모델 선정 완료
+    - 실험 설정은 configs/\_thlee00_/\_base_\upernet 안에 있음
+    - base_upernet_convnext_xlarge_fp16_640x640_160k_ade20k.py
+    - dataset, model, schedules 등 맞추기 헷갈리는 사람을 위한 base_whole_upernet~.py
+        - img_norm 값 맞추고, aug 없이 기본 실험했던 설정 work_dir에서 가져온 것
 - 주엽 미리 새로고침 중
 
 ## 12. 28 (F5 dAy~!~!~!~!)
