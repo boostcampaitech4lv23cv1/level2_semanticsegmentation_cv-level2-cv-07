@@ -29,7 +29,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='mmseg test (and eval) a model')
     parser.add_argument('--config', default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet.py',help='test config file path')
-    parser.add_argument('--checkpoint',default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet/best_mIoU_iter_24871.pth', help='checkpoint file')
+    parser.add_argument('--checkpoint',default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/work_dirs/upernet_beit-large_fp32_8x1_640x640_160k_ade20k_ImgNet/best_mIoU_epoch_14.pth', help='checkpoint file')
     parser.add_argument(
         '--work_dir',
         help=('if specified, the evaluation metric results will be dumped'

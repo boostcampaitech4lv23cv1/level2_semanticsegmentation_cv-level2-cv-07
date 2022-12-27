@@ -8,6 +8,6 @@ runner = dict(type='IterBasedRunner', max_iters=140000)
 checkpoint_config = dict(by_epoch=False, interval=1000000)
 evaluation = dict(interval=1309, metric='mIoU', save_best='mIoU',pre_eval=True)
 # Epoch based learner
-runner = dict(type="EpochBasedRunner", max_epochs=100)
+runner = dict(type="EpochBasedRunner", max_epochs=20)
 checkpoint_config = dict(interval=101)
 evaluation = dict(interval=1, metric="mIoU", save_best='mIoU',pre_eval=True)

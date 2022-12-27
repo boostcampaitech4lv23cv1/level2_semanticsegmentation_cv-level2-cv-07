@@ -1,6 +1,6 @@
 _base_ = [
-    './_base_/models/upernet_beit_512.py', './_base_/datasets/ade_20k_segmentation_512.py',
-    './_base_/default_runtime.py', './_base_/schedules/schedule_custom.py'
+    '../_base_/models/upernet_beit_512.py', '../_base_/datasets/ade_20k_segmentation_512.py',
+    '../_base_/default_runtime.py', '../_base_/schedules/schedule_custom.py'
 ]
 
 model = dict(
