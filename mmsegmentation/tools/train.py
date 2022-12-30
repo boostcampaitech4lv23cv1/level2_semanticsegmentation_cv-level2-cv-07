@@ -57,7 +57,8 @@ def parse_args():
         help='Whether or not set different seeds for different ranks')
     parser.add_argument(
         '--deterministic',
-        action='store_true',
+        type=bool,
+        default=True,
         help='whether to set deterministic options for CUDNN backend.')
     parser.add_argument(
         '--options',
