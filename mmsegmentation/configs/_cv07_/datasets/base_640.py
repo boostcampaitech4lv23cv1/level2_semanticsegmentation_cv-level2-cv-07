@@ -30,6 +30,7 @@ val_pipeline = [
             type='MultiScaleFlipAug',
             img_scale=(640, 640),
             flip=False,
+            flip_direction=['horizontal', 'vertical'],
             transforms=[
                 dict(type='Resize', keep_ratio=True),
                 dict(type='RandomFlip'),

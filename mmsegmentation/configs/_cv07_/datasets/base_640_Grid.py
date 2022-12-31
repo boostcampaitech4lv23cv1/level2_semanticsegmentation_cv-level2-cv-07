@@ -14,19 +14,20 @@ img_norm_cfg = dict(
 crop_size = (640, 640)
 
 albu_train_transforms = [
-    dict(type='RandomBrightnessContrast', brightness_limit=0.1, contrast_limit=0.15, p=0.5),
-    dict(type='HueSaturationValue', hue_shift_limit=15, sat_shift_limit=25, val_shift_limit=10, p=0.5),
-    dict(type='GaussNoise', p=0.3),
-    dict(type='CLAHE',p=0.5),
-    dict(
-    type='OneOf',
-    transforms=[
-        dict(type='Blur', p=1.0),
-        dict(type='GaussianBlur', p=1.0),
-        dict(type='MedianBlur', blur_limit=5, p=1.0),
-        dict(type='MotionBlur', p=1.0)
-    ], p=0.1
-    )
+    dict(type='GridDropout',ratio=0.2,random_offset=True,holes_number_x=4,holes_number_y=4,p=1.0)
+    # dict(type='RandomBrightnessContrast', brightness_limit=0.1, contrast_limit=0.15, p=0.5),
+    # dict(type='HueSaturationValue', hue_shift_limit=15, sat_shift_limit=25, val_shift_limit=10, p=0.5),
+    # dict(type='GaussNoise', p=0.3),
+    # dict(type='CLAHE',p=0.5),
+    # dict(
+    # type='OneOf',
+    # transforms=[
+    #     dict(type='Blur', p=1.0),
+    #     dict(type='GaussianBlur', p=1.0),
+    #     dict(type='MedianBlur', blur_limit=5, p=1.0),
+    #     dict(type='MotionBlur', p=1.0)
+    # ], p=0.1
+    # )
 ]
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -35,12 +36,17 @@ train_pipeline = [
     #     type='RandomMosaic',
     #     img_scale = (512,512),
     #     prob=0.5),
-    dict(type='Resize', img_scale=(640, 640),ratio_range=(0.5, 2.0)),
-    dict(type='RandomCrop', crop_size=crop_size, cat_max_ratio=0.75),
+    dict(type='Resize', img_scale=(640, 640),keep_ratio=True),
+    # dict(type='RandomCrop', crop_size=crop_size, cat_max_ratio=0.75),
+    dict(
+        type='Albu',
+        transforms=albu_train_transforms,
+        keymap=dict(img='image', gt_semantic_seg='mask'),
+        update_pad_shape=True
+    ),
     dict(type='RandomFlip', prob=0.5),
-    dict(type='PhotoMetricDistortion'),
     dict(type='Normalize', **img_norm_cfg),
-    dict(type='Pad', size=(640,640), pad_val=0, seg_pad_val=255),
+    dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_semantic_seg']),
 ]
@@ -53,9 +59,10 @@ valid_pipeline = [
         flip=False,
         flip_direction=['horizontal', 'vertical'],
         transforms=[
-            dict(type='Resize', keep_ratio=True,min_size=640),
+            dict(type='Resize', keep_ratio=True),
             dict(type='RandomFlip'),
             dict(type='Normalize', **img_norm_cfg),
+            dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img']),
         ])
@@ -69,9 +76,10 @@ test_pipeline = [
         flip=False,
         flip_direction=['horizontal', 'vertical'],
         transforms=[
-            dict(type='Resize', keep_ratio=True,min_size=640),
+            dict(type='Resize', keep_ratio=True),
             dict(type='RandomFlip'),
             dict(type='Normalize', **img_norm_cfg),
+            dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img']),
         ])
