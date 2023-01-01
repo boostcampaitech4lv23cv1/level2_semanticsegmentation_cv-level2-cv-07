@@ -12,17 +12,30 @@ img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 # train_all mean, std
 
+albu_train_transforms = [
+    dict(type='ColorJitter'),
+    dict(type='Cutout', num_holes=4, max_h_size=16, max_w_size=16),
+]
 
 train_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(type='LoadAnnotations'),
         dict(type='Resize', img_scale=(640,640), keep_ratio=True),
+        dict(
+            type='Albu',
+            transforms=albu_train_transforms,
+            keymap=dict(img='image', gt_semantic_seg='mask'),
+            update_pad_shape=True
+        ),
         dict(type='RandomFlip', flip_ratio=0.5),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='Pad', size_divisor=32),
         dict(type='DefaultFormatBundle'),
         dict(type='Collect', keys=['img', 'gt_semantic_seg']),
     ]
+
+
+
 
 val_pipeline = [
         dict(type='LoadImageFromFile'),
