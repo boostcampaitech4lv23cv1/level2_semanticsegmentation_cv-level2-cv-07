@@ -1,7 +1,7 @@
 norm_cfg = dict(type='SyncBN', requires_grad=True)
 model = dict(
     type='EncoderDecoder',
-    pretrained=None,
+    pretrained='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/pretrained/beit_large_patch16_224_pt22k_ft22k_convert.pth',
     backbone=dict(
         type='BEiT',
         img_size=(640, 640),

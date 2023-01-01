@@ -4,7 +4,7 @@ _base_ = [
 ]
 
 model = dict(
-    pretrained='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/pretrained/beit_large_patch16_224_pt22k_ft22k_convert.pth',
+    pretrained=None,
     backbone=dict(
         type='BEiT',
         embed_dims=1024,

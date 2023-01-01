@@ -1,6 +1,6 @@
 _base_ = [
     './models/upernet_convnext.py',
-    './datasets/coco_segmentation_640.py',
+    './datasets/coco_segmentation_640_albu_1.py',
     './schedules/schedule_custom.py',
     'default_runtime.py',
 ]
