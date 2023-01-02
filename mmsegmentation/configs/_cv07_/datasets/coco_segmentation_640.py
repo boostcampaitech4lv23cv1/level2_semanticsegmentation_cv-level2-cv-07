@@ -19,7 +19,7 @@ train_pipeline = [
         dict(type='RandomFlip', flip_ratio=0.5),
         dict(
         type="Albu",
-        transforms=[dict(type="ToGray")],
+        transforms=[dict(type="UnsharpMask",blur_limit=(3, 7), sigma_limit=0.0, alpha=(0.2, 0.5), threshold=10, always_apply=False, p=0.5)],
         keymap=dict(img="image", gt_semantic_seg="mask"),
         update_pad_shape=False,
     ),
