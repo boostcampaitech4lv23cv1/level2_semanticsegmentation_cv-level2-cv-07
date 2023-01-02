@@ -65,6 +65,6 @@ def main(json_path):
 
 
 if __name__ =='__main__' :
-    main('/opt/ml/input/data/train.json')
-    main('/opt/ml/input/data/val.json')
+    main('/opt/ml/input/data/stratified_group_kfold/train_fold4.json')
+    main('/opt/ml/input/data/stratified_group_kfold/val_fold4.json')
     main('/opt/ml/input/data/test.json')
