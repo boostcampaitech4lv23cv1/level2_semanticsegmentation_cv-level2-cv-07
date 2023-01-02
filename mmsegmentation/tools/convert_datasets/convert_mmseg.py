@@ -24,7 +24,7 @@ def copy_img(json_path, json_name ):
     
     for image in json_data['images']:
         shutil.copyfile(os.path.join(data_root,image['file_name']),
-                         os.path.join(data_root,f"mmseg/img_dir/{json_name}/{str(image['id']).zfill(4)}.jpg"))
+                         os.path.join(data_root,f"mmseg/img_dir_fold0/{json_name}/{str(image['id']).zfill(4)}.jpg"))
 def gen_mask(json_path, json_name):
     coco = COCO(json_path)
 
@@ -49,22 +49,22 @@ def gen_mask(json_path, json_name):
             masks[coco.annToMask(anns[i]) == 1] = pixel_value
         masks = masks.astype(np.int8)
 
-        cv2.imwrite(os.path.join(data_root,f"mmseg/ann_dir/{json_name}/{str(image_info['id']).zfill(4)}.png"), masks)
+        cv2.imwrite(os.path.join(data_root,f"mmseg/ann_dir_fold0/{json_name}/{str(image_info['id']).zfill(4)}.png"), masks)
 
 def main(json_path):
     json_name = json_path.split('/')[-1].split('.')[0]
     
     if json_name != 'test':
-        for folder in ['mmseg/img_dir', 'mmseg/ann_dir']:
+        for folder in ['mmseg/img_dir_fold0', 'mmseg/ann_dir_fold0']:
             os.makedirs(os.path.join(data_root,os.path.join(folder,json_name)), exist_ok=True)
         copy_img(json_path, json_name)
         gen_mask(json_path, json_name)
     else:
-        os.makedirs(os.path.join(data_root,os.path.join('mmseg/img_dir',json_name)), exist_ok=True)
+        os.makedirs(os.path.join(data_root,os.path.join('mmseg/img_dir_fold0',json_name)), exist_ok=True)
         copy_img(json_path, json_name)
 
 
 if __name__ =='__main__' :
-    main('/opt/ml/input/data/train.json')
-    main('/opt/ml/input/data/val.json')
+    main('/opt/ml/input/data/stratified_group_kfold/train_fold0.json')
+    main('/opt/ml/input/data/stratified_group_kfold/val_fold0.json')
     main('/opt/ml/input/data/test.json')
