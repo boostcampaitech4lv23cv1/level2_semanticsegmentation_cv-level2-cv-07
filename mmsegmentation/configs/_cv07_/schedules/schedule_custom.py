@@ -9,6 +9,6 @@ checkpoint_config = dict(by_epoch=False, interval=7000)
 evaluation = dict(interval=327, metric='mIoU', save_best='mIoU',pre_eval=True)
 
 # Epoch based learner
-runner = dict(type="EpochBasedRunner", max_epochs=20)
-checkpoint_config = dict(interval=21)
-evaluation = dict(interval=1, metric="mIoU", save_best='mIoU',pre_eval=True)
+runner = dict(type="EpochBasedRunner", max_epochs=21)
+checkpoint_config = dict(interval=23)
+evaluation = dict(interval=1, metric="mIoU", save_best='mIoU', pre_eval=True)
