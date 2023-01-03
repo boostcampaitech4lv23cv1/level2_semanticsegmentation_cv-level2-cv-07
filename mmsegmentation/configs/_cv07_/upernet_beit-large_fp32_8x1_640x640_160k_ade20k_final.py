@@ -1,6 +1,6 @@
 _base_ = [
-    './models/upernet_beit.py', './_base_/datasets/coco_segmentation_640.py',
-    './default_runtime.py', './_base_/schedules/schedule_beit.py'
+    './models/upernet_beit.py', './datasets/coco_segmentation_640.py',
+    './default_runtime.py', './schedules/schedule_beit.py'
 ]
 
 model = dict(
@@ -17,8 +17,8 @@ model = dict(
         out_indices=[7, 11, 15, 23]),
     neck=dict(embed_dim=1024, rescales=[4, 2, 1, 0.5]),
     decode_head=dict(
-        in_channels=[1024, 1024, 1024, 1024], num_classes=150, channels=1024),
-    auxiliary_head=dict(in_channels=1024, num_classes=150),
+        in_channels=[1024, 1024, 1024, 1024], num_classes=11, channels=1024),
+    auxiliary_head=dict(in_channels=1024, num_classes=11),
     test_cfg=dict(mode='slide', crop_size=(640, 640), stride=(426, 426)))
 
 optimizer = dict(

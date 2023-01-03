@@ -31,8 +31,8 @@ model = dict(
         norm_cfg=norm_cfg,
         align_corners=False,
         sampler=dict(type='OHEMPixelSampler', thresh=0.7, min_kept=50000),
-        loss_decode=[dict(type='CrossEntropyLoss', class_weight = [1,1,2,1,1,1,2,1,2,1,2], loss_name='loss_ce', loss_weight=0.7),
-            dict(type='DiceLoss', class_weight = [1,1,2,1,1,1,2,1,2,1,2],use_sigmoid=True,loss_name='loss_dice', loss_weight=0.3)]),
+        loss_decode=[dict(type='CrossEntropyLoss', class_weight = [1, 1, 3, 1, 1, 1, 2, 1, 1.5, 1, 1], loss_name='loss_ce', loss_weight=0.7),
+            dict(type='DiceLoss', class_weight = [1, 1, 3, 1, 1, 1, 2, 1, 1.5, 1, 1],use_sigmoid=True,loss_name='loss_dice', loss_weight=0.3)]),
     auxiliary_head=dict(
         type='FCNHead',
         in_channels=768,
@@ -44,8 +44,8 @@ model = dict(
         num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
-        loss_decode=[dict(type='CrossEntropyLoss', class_weight = [1,1,2,1,1,1,2,1,2,1,2], loss_name='loss_ce', loss_weight=0.7),
-            dict(type='DiceLoss',class_weight = [1,1,2,1,1,1,2,1,2,1,2], use_sigmoid=True,loss_name='loss_dice', loss_weight=0.3)]),
+        loss_decode=[dict(type='CrossEntropyLoss', class_weight = [1, 1, 3, 1, 1, 1, 2, 1, 1.5, 1, 1], loss_name='loss_ce', loss_weight=0.7),
+            dict(type='DiceLoss',class_weight = [1, 1, 3, 1, 1, 1, 2, 1, 1.5, 1, 1], use_sigmoid=True,loss_name='loss_dice', loss_weight=0.3)]),
     # model training and testing settings
     train_cfg=dict(),
     test_cfg=dict(mode='whole'))
