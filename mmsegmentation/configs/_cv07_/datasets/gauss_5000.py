@@ -25,7 +25,7 @@ albu_train_transforms = [
     ),
     # dict(type='UnsharpMask',blur_limit=(3, 7), sigma_limit=0.0, alpha=(0.2, 0.5), threshold=10, always_apply=False, p=0.5),
     dict(type='ShiftScaleRotate',shift_limit=0.0625, scale_limit=(0,1), rotate_limit=0, interpolation=1, p=0.5),
-    # dict(type='Gaussian',shift_limit=0.0625, scale_limit=(0,1), rotate_limit=0, interpolation=1, p=0.5),
+    dict(type='GaussNoise', var_limit=(5000.0, 10000.0), mean=0, per_channel=True, always_apply=False, p=0.5),
     dict(type='Cutout', num_holes=4, max_h_size=16, max_w_size=16),
 ]
 train_pipeline = [
