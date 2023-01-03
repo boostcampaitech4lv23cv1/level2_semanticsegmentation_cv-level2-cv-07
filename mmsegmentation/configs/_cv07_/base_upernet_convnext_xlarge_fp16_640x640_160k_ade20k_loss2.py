@@ -1,5 +1,5 @@
 _base_ = [
-    './models/upernet_convnext.py',
+    './models/upernet_convnext2.py',
     './datasets/coco_segmentation_640.py',
     './schedules/schedule_custom.py',
     'default_runtime.py',
@@ -51,7 +51,7 @@ lr_config = dict(
 load_from = '/opt/ml/level2_semanticsegmentation_cv-level2-cv-07/mmsegmentation/pretrained/upernet_convnext_xlarge_fp16_640x640_160k_ade20k_20220226_080344-95fc38c2.pth'
 
 # By default, models are trained on 8 GPUs with 2 images per GPU
-data = dict(samples_per_gpu=4)
+data = dict(samples_per_gpu=8)
 # fp16 settings
 optimizer_config = dict(type='Fp16OptimizerHook', loss_scale='dynamic')
 # fp16 placeholder
