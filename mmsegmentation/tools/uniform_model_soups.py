@@ -271,9 +271,6 @@ def main():
     # set multi-process settings
     setup_multi_processes(cfg)
 
-    
-    # Logging 해주는 부분
-    
     # init the meta dict to record some important information such as    
     # environment info and seed, which will be logged
     meta = dict()
@@ -298,7 +295,7 @@ def main():
     set_random_seed(seed, deterministic=args.deterministic)
     cfg.seed = seed
     meta['seed'] = seed
-    meta['exp_name'] = osp.basename(args.config) # config_file의 이름을 exp_name으로
+    meta['exp_name'] = osp.basename(args.config)
     
     model = build_segmentor(
         cfg.model,
@@ -308,3 +305,4 @@ def main():
 
     model = uniform_soup(model, args.checkpoints_path, device = "cpu", by_name = False)
     torch.save(model, args.checkpoints_path+"uniform_soup_result.pth")
+    print("uniform model soups result has been successfully saved.")
