@@ -15,7 +15,6 @@ from ..builder import PIPELINES
 @PIPELINES.register_module()
 class ResizeToMultiple(object):
     """Resize images & seg to multiple of divisor.
-
     Args:
         size_divisor (int): images and gt seg maps need to resize to multiple
             of size_divisor. Default: 32.
@@ -30,10 +29,8 @@ class ResizeToMultiple(object):
     def __call__(self, results):
         """Call function to resize images, semantic segmentation map to
         multiple of size divisor.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Resized results, 'img_shape', 'pad_shape' keys are updated.
         """
@@ -72,27 +69,21 @@ class ResizeToMultiple(object):
 @PIPELINES.register_module()
 class Resize(object):
     """Resize images & seg.
-
     This transform resizes the input image to some scale. If the input dict
     contains the key "scale", then the scale in the input dict is used,
     otherwise the specified scale in the init method is used.
-
     ``img_scale`` can be None, a tuple (single-scale) or a list of tuple
     (multi-scale). There are 4 multiscale modes:
-
     - ``ratio_range is not None``:
     1. When img_scale is None, img_scale is the shape of image in results
         (img_scale = results['img'].shape[:2]) and the image is resized based
         on the original size. (mode 1)
     2. When img_scale is a tuple (single-scale), randomly sample a ratio from
         the ratio range and multiply it with the image scale. (mode 2)
-
     - ``ratio_range is None and multiscale_mode == "range"``: randomly sample a
     scale from the a range. (mode 3)
-
     - ``ratio_range is None and multiscale_mode == "value"``: randomly sample a
     scale from multiple scales. (mode 4)
-
     Args:
         img_scale (tuple or list[tuple]): Images scales for resizing.
             Default:None.
@@ -140,10 +131,8 @@ class Resize(object):
     @staticmethod
     def random_select(img_scales):
         """Randomly select an img_scale from given candidates.
-
         Args:
             img_scales (list[tuple]): Images scales for selection.
-
         Returns:
             (tuple, int): Returns a tuple ``(img_scale, scale_dix)``,
                 where ``img_scale`` is the selected image scale and
@@ -158,12 +147,10 @@ class Resize(object):
     @staticmethod
     def random_sample(img_scales):
         """Randomly sample an img_scale when ``multiscale_mode=='range'``.
-
         Args:
             img_scales (list[tuple]): Images scale range for sampling.
                 There must be two tuples in img_scales, which specify the lower
                 and upper bound of image scales.
-
         Returns:
             (tuple, None): Returns a tuple ``(img_scale, None)``, where
                 ``img_scale`` is sampled scale and None is just a placeholder
@@ -185,16 +172,13 @@ class Resize(object):
     @staticmethod
     def random_sample_ratio(img_scale, ratio_range):
         """Randomly sample an img_scale when ``ratio_range`` is specified.
-
         A ratio will be randomly sampled from the range specified by
         ``ratio_range``. Then it would be multiplied with ``img_scale`` to
         generate sampled scale.
-
         Args:
             img_scale (tuple): Images scale base to multiply with ratio.
             ratio_range (tuple[float]): The minimum and maximum ratio to scale
                 the ``img_scale``.
-
         Returns:
             (tuple, None): Returns a tuple ``(scale, None)``, where
                 ``scale`` is sampled ratio multiplied with ``img_scale`` and
@@ -212,16 +196,13 @@ class Resize(object):
     def _random_scale(self, results):
         """Randomly sample an img_scale according to ``ratio_range`` and
         ``multiscale_mode``.
-
         If ``ratio_range`` is specified, a ratio will be sampled and be
         multiplied with ``img_scale``.
         If multiple scales are specified by ``img_scale``, a scale will be
         sampled according to ``multiscale_mode``.
         Otherwise, single scale will be used.
-
         Args:
             results (dict): Result dict from :obj:`dataset`.
-
         Returns:
             dict: Two new keys 'scale` and 'scale_idx` are added into
                 ``results``, which would be used by subsequent pipelines.
@@ -300,10 +281,8 @@ class Resize(object):
     def __call__(self, results):
         """Call function to resize images, bounding boxes, masks, semantic
         segmentation map.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Resized results, 'img_shape', 'pad_shape', 'scale_factor',
                 'keep_ratio' keys are added into result dict.
@@ -327,11 +306,9 @@ class Resize(object):
 @PIPELINES.register_module()
 class RandomFlip(object):
     """Flip the image & seg.
-
     If the input dict contains the key "flip", then the flag will be used,
     otherwise it will be randomly decided by a ratio specified in the init
     method.
-
     Args:
         prob (float, optional): The flipping probability. Default: None.
         direction(str, optional): The flipping direction. Options are
@@ -349,10 +326,8 @@ class RandomFlip(object):
     def __call__(self, results):
         """Call function to flip bounding boxes, masks, semantic segmentation
         maps.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Flipped results, 'flip', 'flip_direction' keys are added into
                 result dict.
@@ -382,11 +357,9 @@ class RandomFlip(object):
 @PIPELINES.register_module()
 class Pad(object):
     """Pad the image & mask.
-
     There are two padding modes: (1) pad to a fixed size and (2) pad to the
     minimum size that is divisible by some number.
     Added keys are "pad_shape", "pad_fixed_size", "pad_size_divisor",
-
     Args:
         size (tuple, optional): Fixed padding size.
         size_divisor (int, optional): The divisor of padded size.
@@ -431,10 +404,8 @@ class Pad(object):
 
     def __call__(self, results):
         """Call function to pad images, masks, semantic segmentation maps.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Updated result dict.
         """
@@ -453,9 +424,7 @@ class Pad(object):
 @PIPELINES.register_module()
 class Normalize(object):
     """Normalize the image.
-
     Added key is "img_norm_cfg".
-
     Args:
         mean (sequence): Mean values of 3 channels.
         std (sequence): Std values of 3 channels.
@@ -470,10 +439,8 @@ class Normalize(object):
 
     def __call__(self, results):
         """Call function to normalize images.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Normalized results, 'img_norm_cfg' key is added into
                 result dict.
@@ -495,7 +462,6 @@ class Normalize(object):
 @PIPELINES.register_module()
 class Rerange(object):
     """Rerange the image pixel value.
-
     Args:
         min_value (float or int): Minimum value of the reranged image.
             Default: 0.
@@ -512,7 +478,6 @@ class Rerange(object):
 
     def __call__(self, results):
         """Call function to rerange images.
-
         Args:
             results (dict): Result dict from loading pipeline.
         Returns:
@@ -541,10 +506,8 @@ class Rerange(object):
 @PIPELINES.register_module()
 class CLAHE(object):
     """Use CLAHE method to process the image.
-
     See `ZUIDERVELD,K. Contrast Limited Adaptive Histogram Equalization[J].
     Graphics Gems, 1994:474-485.` for more information.
-
     Args:
         clip_limit (float): Threshold for contrast limiting. Default: 40.0.
         tile_grid_size (tuple[int]): Size of grid for histogram equalization.
@@ -561,10 +524,8 @@ class CLAHE(object):
 
     def __call__(self, results):
         """Call function to Use CLAHE method process images.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Processed results.
         """
@@ -586,7 +547,6 @@ class CLAHE(object):
 @PIPELINES.register_module()
 class RandomCrop(object):
     """Random crop the image & seg.
-
     Args:
         crop_size (tuple): Expected size after cropping, (h, w).
         cat_max_ratio (float): The maximum ratio that single category could
@@ -618,10 +578,8 @@ class RandomCrop(object):
 
     def __call__(self, results):
         """Call function to randomly crop images, semantic segmentation maps.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Randomly cropped results, 'img_shape' key in result dict is
                 updated according to crop size.
@@ -659,7 +617,6 @@ class RandomCrop(object):
 @PIPELINES.register_module()
 class RandomRotate(object):
     """Rotate the image & seg.
-
     Args:
         prob (float): The rotation probability.
         degree (float, tuple[float]): Range of degrees to select from. If
@@ -698,10 +655,8 @@ class RandomRotate(object):
 
     def __call__(self, results):
         """Call function to rotate image, semantic segmentation maps.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Rotated results.
         """
@@ -742,12 +697,10 @@ class RandomRotate(object):
 @PIPELINES.register_module()
 class RGB2Gray(object):
     """Convert RGB image to grayscale image.
-
     This transform calculate the weighted mean of input image channels with
     ``weights`` and then expand the channels to ``out_channels``. When
     ``out_channels`` is None, the number of output channels is the same as
     input channels.
-
     Args:
         out_channels (int): Expected number of output channels after
             transforming. Default: None.
@@ -765,10 +718,8 @@ class RGB2Gray(object):
 
     def __call__(self, results):
         """Call function to convert RGB image to grayscale image.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Result dict with grayscale image.
         """
@@ -797,7 +748,6 @@ class RGB2Gray(object):
 @PIPELINES.register_module()
 class AdjustGamma(object):
     """Using gamma correction to process the image.
-
     Args:
         gamma (float or int): Gamma value used in gamma correction.
             Default: 1.0.
@@ -813,10 +763,8 @@ class AdjustGamma(object):
 
     def __call__(self, results):
         """Call function to process the image with gamma correction.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Processed results.
         """
@@ -833,7 +781,6 @@ class AdjustGamma(object):
 @PIPELINES.register_module()
 class SegRescale(object):
     """Rescale semantic segmentation maps.
-
     Args:
         scale_factor (float): The scale factor of the final output.
     """
@@ -843,10 +790,8 @@ class SegRescale(object):
 
     def __call__(self, results):
         """Call function to scale the semantic segmentation map.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Result dict with semantic segmentation map scaled.
         """
@@ -865,7 +810,6 @@ class PhotoMetricDistortion(object):
     """Apply photometric distortion to image sequentially, every transformation
     is applied with a probability of 0.5. The position of random contrast is in
     second or second to last.
-
     1. random brightness
     2. random contrast (mode 0)
     3. convert color from BGR to HSV
@@ -873,7 +817,6 @@ class PhotoMetricDistortion(object):
     5. random hue
     6. convert color from HSV to BGR
     7. random contrast (mode 1)
-
     Args:
         brightness_delta (int): delta of brightness.
         contrast_range (tuple): range of contrast.
@@ -937,10 +880,8 @@ class PhotoMetricDistortion(object):
 
     def __call__(self, results):
         """Call function to perform photometric distortion on images.
-
         Args:
             results (dict): Result dict from loading pipeline.
-
         Returns:
             dict: Result dict with images distorted.
         """
@@ -982,7 +923,6 @@ class PhotoMetricDistortion(object):
 @PIPELINES.register_module()
 class RandomCutOut(object):
     """CutOut operation.
-
     Randomly drop some regions of image used in
     `Cutout <https://arxiv.org/abs/1708.04552>`_.
     Args:
@@ -1076,9 +1016,7 @@ class RandomMosaic(object):
     """Mosaic augmentation. Given 4 images, mosaic transform combines them into
     one output image. The output image is composed of the parts from each sub-
     image.
-
     .. code:: text
-
                         mosaic transform
                            center_x
                 +------------------------------+
@@ -1095,13 +1033,11 @@ class RandomMosaic(object):
                 +----|-------------+-----------+
                      |             |
                      +-------------+
-
      The mosaic transform steps are as follows:
          1. Choose the mosaic center as the intersections of 4 images
          2. Get the left top image according to the index, and randomly
             sample another 3 images from the custom dataset.
          3. Sub image will be cropped if image is larger than mosaic patch
-
     Args:
         prob (float): mosaic probability.
         img_scale (Sequence[int]): Image size after mosaic pipeline of
@@ -1130,10 +1066,8 @@ class RandomMosaic(object):
 
     def __call__(self, results):
         """Call function to make a mosaic of image.
-
         Args:
             results (dict): Result dict.
-
         Returns:
             dict: Result dict with mosaic transformed.
         """
@@ -1145,10 +1079,8 @@ class RandomMosaic(object):
 
     def get_indexes(self, dataset):
         """Call function to collect indexes.
-
         Args:
             dataset (:obj:`MultiImageMixDataset`): The dataset.
-
         Returns:
             list: indexes.
         """
@@ -1158,10 +1090,8 @@ class RandomMosaic(object):
 
     def _mosaic_transform_img(self, results):
         """Mosaic transform function.
-
         Args:
             results (dict): Result dict.
-
         Returns:
             dict: Updated result dict.
         """
@@ -1217,10 +1147,8 @@ class RandomMosaic(object):
 
     def _mosaic_transform_seg(self, results):
         """Mosaic transform function for label annotations.
-
         Args:
             results (dict): Result dict.
-
         Returns:
             dict: Updated result dict.
         """
@@ -1269,14 +1197,12 @@ class RandomMosaic(object):
     def _mosaic_combine(self, loc, center_position_xy, img_shape_wh):
         """Calculate global coordinate of mosaic image and local coordinate of
         cropped sub-image.
-
         Args:
             loc (str): Index for the sub-image, loc in ('top_left',
               'top_right', 'bottom_left', 'bottom_right').
             center_position_xy (Sequence[float]): Mixing center for 4 images,
                 (x, y).
             img_shape_wh (Sequence[int]): Width and height of sub-image
-
         Returns:
             tuple[tuple[float]]: Corresponding coordinate of pasting and
                 cropping

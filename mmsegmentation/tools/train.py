@@ -57,7 +57,8 @@ def parse_args():
         help='Whether or not set different seeds for different ranks')
     parser.add_argument(
         '--deterministic',
-        action='store_true',
+        type=bool,
+        default=True,
         help='whether to set deterministic options for CUDNN backend.')
     parser.add_argument(
         '--options',
@@ -116,7 +117,7 @@ def main():
 
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
-        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.benchmark = False
 
     # work_dir is determined in this priority: CLI > segment in file > filename
     if args.work_dir is not None:

@@ -1,5 +1,5 @@
 _base_ = [
-    './models/upernet_convnext.py',
+    './models/upernet_convnext3.py',
     './datasets/coco_segmentation_640.py',
     './schedules/schedule_custom.py',
     'default_runtime.py',
