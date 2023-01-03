@@ -25,8 +25,8 @@ model = dict(
         norm_cfg=norm_cfg,
         align_corners=False,
         loss_decode=[
-            dict(type='DiceLoss', loss_name='loss_dice', use_sigmoid=False, loss_weight=0.5),
-            dict(type='FocalLoss', loss_name='loss_focal', use_sigmoid=False, loss_weight=0.5)
+            dict(type='DiceLoss', loss_name='loss_dice', use_sigmoid=True, loss_weight=0.5),
+            dict(type='FocalLoss', loss_name='loss_focal', use_sigmoid=True, loss_weight=0.5)
         ]
     ),
     auxiliary_head=dict(
@@ -41,8 +41,8 @@ model = dict(
         norm_cfg=norm_cfg,
         align_corners=False,
             loss_decode=[
-            dict(type='DiceLoss', loss_name='loss_dice', use_sigmoid=False, loss_weight=0.5),
-            dict(type='FocalLoss', loss_name='loss_focal', use_sigmoid=False, loss_weight=0.5)
+            dict(type='DiceLoss', loss_name='loss_dice', use_sigmoid=True, loss_weight=0.5),
+            dict(type='FocalLoss', loss_name='loss_focal', use_sigmoid=True, loss_weight=0.5)
         ]    
     ),
     # model training and testing settings
