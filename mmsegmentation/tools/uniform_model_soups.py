@@ -222,3 +222,6 @@ def main():
     model = uniform_soup(model, args.checkpoints_path, device = "cpu")
     torch.save(model, args.checkpoints_path+"uniform_soup_result.pth")
     print("uniform model soups result has been successfully saved.")
+
+if __name__ == '__main__':
+    main()
