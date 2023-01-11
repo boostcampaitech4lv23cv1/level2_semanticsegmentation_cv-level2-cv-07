@@ -62,7 +62,6 @@
 
 ![image](https://user-images.githubusercontent.com/56151577/211737071-e0db8d40-7910-4061-9bc1-f310f4a467f9.png)
 
-- 전체 이미지 개수 : 9754장 (train: 4883장 / test: 4871장)
 - 11 Class : Background, General trash, Paper, Paper pack, Metal, Glass, Plastic, Styrofoam, Plastic bag, Battery, Clothing
 - images:
     - id: 파일 안에서 image 고유 id, ex) 1
