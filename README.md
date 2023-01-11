@@ -37,11 +37,11 @@
     </tr>
 </table>
 
-- 김기용_T4020: Cascade-RCNN, Faster-RCNN 실험
-- 김성수_T4039: 협업 리딩, Yolo v7 분석 및 실험, K-fold ensemble
-- 김주엽_T4048: Faster-RCNN 및 YoloX, Yolov7 실험
-- 이  구_T4145: 실험 초반 setting, Deformable DETR, ATSS FocalNet 실험 및 분석
-- 이태희_T4172: UniverseNet, DiffusionDet 실험
+- 김기용_T4020: model, augmentation, DiceTopk loss, Weighted CE 실험
+- 김성수_T4039: MMsegmentation baseline 분석, 모델 조사, augmentation, Combo loss, Weighted CE 실험
+- 김주엽_T4048: Git 브랜치 템플릿 구성, SMP 템플릿 작성, augmentation 실험
+- 이  구_T4145: model, augmentation, Focal & Dice loss, Weighted CE 실험
+- 이태희_T4172: Confusion Matrix 코드, model, augmentation, Focal & Tversky loss, Weighted CE 실험
 
 ## 프로젝트 개요
 ![image](https://user-images.githubusercontent.com/59161083/206113041-ba64f643-4321-4eb9-9a3f-a3bc83b84bbf.png)
