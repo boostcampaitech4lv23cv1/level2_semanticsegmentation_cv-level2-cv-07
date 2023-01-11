@@ -1,4 +1,4 @@
-# level2_objectdetection_cv-level2-cv-07
+# level2_semanticsegmentation_cv-level2-cv-07
 
 ## 팀원 
 <table>
