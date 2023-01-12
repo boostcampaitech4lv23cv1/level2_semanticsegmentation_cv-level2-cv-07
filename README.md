@@ -94,6 +94,6 @@
 [![image](https://user-images.githubusercontent.com/62556539/200262300-3765b3e4-0050-4760-b008-f218d079a770.png)](https://www.notion.so/Semantic-Segmentation-Project-Wrap-Up-Report-0b824283f46144a1b1c16795a689ec5f)
 
 ## Result
-- Public LB mAP: **74.05**
-- Private LB mAP : **72.64**
+- Public LB mIoU: **74.05**
+- Private LB mIoU : **72.64**
 - Rank : **13**/19
