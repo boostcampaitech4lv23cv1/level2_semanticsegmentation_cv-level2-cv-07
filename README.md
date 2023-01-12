@@ -40,7 +40,7 @@
 - 김기용_T4020: model, augmentation, DiceTopk loss, Weighted CE 실험
 - 김성수_T4039: MMsegmentation baseline 분석, 모델 조사, augmentation, Combo loss, Weighted CE 실험
 - 김주엽_T4048: Git 브랜치 템플릿 구성, SMP 템플릿 작성, augmentation 실험
-- 이  구_T4145: model, augmentation, Focal & Dice loss, Weighted CE 실험
+- 이  구_T4145: model, augmentation, Focal & Dice loss, Weighted CE 실험, Model Soups 적용 및 디버깅
 - 이태희_T4172: Confusion Matrix 코드, model, augmentation, Focal & Tversky loss, Weighted CE 실험
 
 ## 프로젝트 개요
